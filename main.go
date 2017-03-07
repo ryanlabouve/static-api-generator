@@ -10,12 +10,12 @@ import (
 )
 
 type Article struct {
-	ID          int       `json:"-"`
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	Date        time.Time `json:"date"`
-	Slug        string    `json:"slug"`
-	Content     string    `json:"content"`
+	ID          int       `jsonapi:"primary,articles"`
+	Title       string    `jsonapi:"attr,title"`
+	Description string    `jsonapi:"attr,description"`
+	Date        time.Time `jsonapi:"attr,date"`
+	Slug        string    `jsonapi:"attr,slug"`
+	Content     string    `jsonapi:"attr,content"`
 }
 
 type Articles []interface{}
