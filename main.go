@@ -1,15 +1,16 @@
 package main
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 	"time"
 
+	"github.com/google/jsonapi"
 	"github.com/gorilla/mux"
 )
 
 type Article struct {
+	ID          int       `json:"-"`
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
 	Date        time.Time `json:"date"`
@@ -17,23 +18,25 @@ type Article struct {
 	Content     string    `json:"content"`
 }
 
-type Articles []Article
+type Articles []interface{}
 
 var articles Articles
 
 func init() {
 	articles = Articles{
 		Article{
+			1,
 			"Test Title",
 			"Here is my test description",
-			"0001-01-01T00:00:00Z",
+			time.Now(),
 			"test-slug",
 			"My content...",
 		},
 		Article{
+			2,
 			"Test Title 2",
 			"Here is my test description 2",
-			"0001-01-01T00:00:00Z",
+			time.Now(),
 			"test-slug2",
 			"My other content...",
 		},
@@ -46,11 +49,16 @@ func init() {
 // /articles?filter[term]=search term
 
 func GetArticles(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode(articles)
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", jsonapi.MediaType)
+	if err := jsonapi.MarshalManyPayload(w, articles); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
 
 func main() {
 	// [x] : Goal one, list some articles
+	// [ ] : Goal two, list some articles in JSON API format
 	router := mux.NewRouter()
 	router.HandleFunc("/articles", GetArticles).Methods("GET")
 	log.Fatal(http.ListenAndServe(":7111", router))
