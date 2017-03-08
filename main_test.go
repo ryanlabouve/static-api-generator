@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"testing"
 
 	"github.com/google/jsonapi"
@@ -22,11 +23,12 @@ func TestGetArticles(t *testing.T) {
 		t.Fatalf("Expected a status of %d, got %d", e, a)
 	}
 
-	var output Articles
-	jsonapi.UnmarshalPayload(rr.Body, &output)
-	// articles := jsonapi.UnmarshalManyPayload(rr.Body, reflect.TypeOf(new(Article)))
-	// fmt.Printf("%#v", articles)
-	// TODO: Figure out why we are not unmarshaling the articles correctly
+	articles, err := jsonapi.UnmarshalManyPayload(rr.Body, reflect.TypeOf(new(Article)))
+	if err != nil {
+		fmt.Printf("%#v", err)
+	}
 
-	fmt.Printf("%#v", output)
+	if len(articles) != 2 {
+		t.Fatalf("Expected `articles` reponse to contain two articles")
+	}
 }
