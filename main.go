@@ -18,13 +18,13 @@ type Article struct {
 	Content     string    `jsonapi:"attr,content"`
 }
 
-type Articles []interface{}
+type Articles []*Article
 
 var articles Articles
 
 func init() {
 	articles = Articles{
-		Article{
+		&Article{
 			1,
 			"Test Title",
 			"Here is my test description",
@@ -32,7 +32,7 @@ func init() {
 			"test-slug",
 			"My content...",
 		},
-		Article{
+		&Article{
 			2,
 			"Test Title 2",
 			"Here is my test description 2",
@@ -58,7 +58,13 @@ func GetArticles(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	// [x] : Goal one, list some articles
-	// [ ] : Goal two, list some articles in JSON API format
+	// [x] : Goal two, list some articles in JSON API format
+	// [ ] : Goal three, Add some tests using standard test package
+	// [ ] : Goal x, filter QP's
+	// [ ] : Goal x, Connect Ember
+	// [ ] : Goal x, Write search
+	// [ ] : Goal x, Do markdown to memory import
+	// [ ] : Goal x, Deploy and cut over?
 	router := mux.NewRouter()
 	router.HandleFunc("/articles", GetArticles).Methods("GET")
 	log.Fatal(http.ListenAndServe(":7111", router))
