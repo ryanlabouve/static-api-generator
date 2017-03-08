@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -51,9 +52,16 @@ func init() {
 func GetArticles(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", jsonapi.MediaType)
+	fmt.Printf("Size of Articles: %d\n", len(articles))
 	if err := jsonapi.MarshalManyPayload(w, articles); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+}
+
+func Router() *mux.Router {
+	router := mux.NewRouter()
+	router.HandleFunc("/articles", GetArticles).Methods("GET")
+	return router
 }
 
 func main() {
@@ -65,7 +73,5 @@ func main() {
 	// [ ] : Goal x, Write search
 	// [ ] : Goal x, Do markdown to memory import
 	// [ ] : Goal x, Deploy and cut over?
-	router := mux.NewRouter()
-	router.HandleFunc("/articles", GetArticles).Methods("GET")
-	log.Fatal(http.ListenAndServe(":7111", router))
+	log.Fatal(http.ListenAndServe(":7111", Router()))
 }
