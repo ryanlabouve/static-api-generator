@@ -23,12 +23,23 @@ func TestGetArticles(t *testing.T) {
 		t.Fatalf("Expected a status of %d, got %d", e, a)
 	}
 
-	articles, err := jsonapi.UnmarshalManyPayload(rr.Body, reflect.TypeOf(new(Article)))
+	output, err := jsonapi.UnmarshalManyPayload(rr.Body, reflect.TypeOf(&Article{}))
 	if err != nil {
-		fmt.Printf("%#v", err)
+		t.Errorf("Failed to Unmarshall JSON response: ", err)
 	}
 
-	if len(articles) != 2 {
+	if len(output) != 2 {
 		t.Fatalf("Expected `articles` reponse to contain two articles")
 	}
+
+	articles := make(Articles, len(output))
+	for i, v := range output {
+		fmt.Println("%#v", output)
+		var ok bool
+		if output[i], ok = v.(*Article); !ok {
+			t.Errorf("%v is not an *Artilcle")
+		}
+	}
+
+	fmt.Println("%#v", articles)
 }
